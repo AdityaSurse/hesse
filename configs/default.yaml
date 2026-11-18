@@ -1,0 +1,42 @@
+run_name: default_run
+epochs: 100
+steps: null
+seed: 42
+device: auto
+
+data:
+  dataset: cifar10
+  subset_size: 5000
+  batch_size: null
+  loss_type: mse
+  val_size: 1000
+  data_dir: data
+  seed: 42
+
+model:
+  architecture: mlp
+  input_dim: 3072
+  hidden_dims:
+    - 512
+    - 256
+  num_classes: 10
+  activation: relu
+  use_batch_norm: false
+  dropout: 0.0
+
+optim:
+  optimizer: gd
+  lr: 0.05
+  momentum: 0.0
+  beta1: 0.9
+  beta2: 0.999
+  weight_decay: 0.0
+  eps: 1.0e-8
+
+tracker:
+  track_interval: 10
+  compute_sharpness: true
+  compute_trace: true
+  compute_topk: 5
+  compute_density: false
+  log_dir: runs/default

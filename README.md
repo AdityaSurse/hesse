@@ -778,8 +778,8 @@ cd hesse
 python3 -m venv .venv
 source .venv/bin/activate
 
-# Install hesse in editable mode with development dependencies (coming in Phase 2+)
-pip install -e ".[dev,viz]"
+# Install hesse in editable mode with development dependencies
+pip install -e ".[dev]"
 ```
 
 ### 2. Live Curvature Tracking CLI
