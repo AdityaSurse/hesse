@@ -832,7 +832,46 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
-### 2. Live Curvature Tracking CLI
+### 2. Hessian Engine API
+
+Compute exact matrix-free curvature metrics directly from Python using the `Curvature` facade:
+
+```python
+import torch
+import torch.nn as nn
+from hesse.hessian import Curvature
+
+# Define network, loss, and evaluation batch
+model = nn.Sequential(nn.Linear(32, 64), nn.ReLU(), nn.Linear(64, 10))
+loss_fn = nn.CrossEntropyLoss()
+data = (torch.randn(100, 32), torch.randint(0, 10, (100,)))
+
+# Initialize curvature engine (O(P) memory via Pearlmutter double backward)
+curv = Curvature(model=model, loss_fn=loss_fn, data=data)
+
+# 1. Top eigenvalue / sharpness (power iteration)
+sharpness = curv.sharpness(iters=50, tol=1e-4)
+
+# 2. Top-k eigenvalues & Ritz vectors (Lanczos with full reorthogonalization)
+ritz_vals, ritz_vecs = curv.top_k(k=5, m=25)
+
+# 3. Hessian trace & standard error (Hutchinson Rademacher probes)
+trace, std_err = curv.trace(n_samples=50)
+
+# 4. Continuous spectral density (Stochastic Lanczos Quadrature)
+grid, density = curv.density(n_probes=10, m=20, sigma=0.1)
+
+# 5. Adam preconditioned sharpness & theoretical stability threshold
+opt = torch.optim.Adam(model.parameters(), lr=1e-3, betas=(0.9, 0.999))
+prec_sharp, bound = curv.preconditioned_sharpness(optimizer=opt)
+```
+
+<p align="center">
+  <img src="docs/figures/hessian_cost.png" width="90%" alt="Empirical scaling benchmark of matrix-free Hessian estimators from 10^3 to 10^6 parameters">
+</p>
+<p align="center"><em>Empirical wall-clock scaling: All matrix-free estimators scale strictly linearly with parameter count $\mathcal{O}(P)$, evaluating models up to $10^6$ parameters without materializing the Hessian matrix.</em></p>
+
+### 3. Live Curvature Tracking CLI
 
 Track loss, $\lambda_{\max}$, and theoretical stability thresholds during model training:
 
@@ -853,7 +892,7 @@ hesse track \
   --log-dir runs/cifar_gd_e1/
 ```
 
-### 3. Launching the Real-Time Streamlit Dashboard
+### 4. Launching the Real-Time Streamlit Dashboard
 
 Stream curvature trajectories and eigenvalue spectral densities live during training runs:
 
@@ -862,7 +901,7 @@ Stream curvature trajectories and eigenvalue spectral densities live during trai
 hesse dashboard --log-dir runs/cifar_gd_e1/ --port 8501
 ```
 
-### 4. Visualizing 2D and 3D Loss Landscapes
+### 5. Visualizing 2D and 3D Loss Landscapes
 
 Extract filter-normalized 2D slices and interactive 3D meshes around trained checkpoints:
 

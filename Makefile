@@ -1,7 +1,7 @@
 export MPLCONFIGDIR ?= /tmp/matplotlib
 export PYTHONPATH ?= .
 
-.PHONY: help install test lint format figures clean
+.PHONY: help install test lint format figures bench clean
 
 help:
 	@echo "hesse developer commands:"
@@ -10,6 +10,7 @@ help:
 	@echo "  make lint     - Check code style with ruff"
 	@echo "  make format   - Format code with ruff"
 	@echo "  make figures  - Generate publication figures for README"
+	@echo "  make bench    - Run matrix-free Hessian scaling benchmarks"
 	@echo "  make clean    - Remove build and cache artifacts"
 
 install:
@@ -26,6 +27,9 @@ format:
 
 figures:
 	python3 scripts/make_readme_figures.py
+
+bench:
+	python3 experiments/bench_hessian.py
 
 clean:
 	rm -rf build/ dist/ *.egg-info .pytest_cache .ruff_cache htmlcov .coverage
