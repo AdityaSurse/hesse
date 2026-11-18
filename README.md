@@ -10,6 +10,11 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 <!-- CI: placeholder for GitHub Actions build badge (Phase 8) -->
 
+<p align="center">
+  <img src="docs/figures/hero_landscape.png" width="90%" alt="hesse 3D loss landscape surface with optimization trajectory">
+</p>
+<p align="center"><em>Live loss-landscape curvature tracking and optimization trajectory over a non-convex anisotropic valley.</em></p>
+
 </div>
 
 ---
@@ -64,6 +69,11 @@ $$\lambda_{\max} \equiv \lambda_1 = \sup_{v \neq 0} \frac{v^T H(\theta) v}{v^T v
 
 The scalar $\lambda_{\max}$ quantifies the maximum directional curvature: along the eigenvector $q_1$, a displacement $\delta$ produces the largest second-order change in loss, $\Delta \mathcal{L} \approx \frac{1}{2} \lambda_{\max} \|\delta\|_2^2$.
 
+<p align="center">
+  <img src="docs/figures/quadratic_contour_gd.png" width="90%" alt="2D quadratic loss contours showing stable and unstable gradient descent trajectories">
+</p>
+<p align="center"><em>2D quadratic loss contours ($H = [[2,3],[3,10]]$): Gradient descent is stable along the top eigenmode for $\eta = 0.15 < 2/\lambda_{\max}$, but diverges exponentially for $\eta = 0.19 > 2/\lambda_{\max}$ ($2/11 \approx 0.182$).</em></p>
+
 ### 2. Derivation of the $2/\eta$ Linear Stability Threshold
 
 To understand why $2/\eta$ forms a fundamental dynamical boundary, consider the one-dimensional scalar quadratic objective:
@@ -101,6 +111,12 @@ $$0 < \eta \lambda < 2$$
 Since both $\eta > 0$ and $\lambda > 0$, dividing by $\eta$ yields the exact stability condition:
 
 $$\lambda < \frac{2}{\eta}$$
+
+<p align="center">
+  <img src="docs/figures/gd_stability_1d.png" width="48%" alt="1D gradient descent stability regimes across learning rates">
+  <img src="docs/figures/stability_region.png" width="48%" alt="Contraction factor and linear stability boundary at 2/eta">
+</p>
+<p align="center"><em>Left: 1D iterate dynamics $x_t$ across monotonic, oscillatory, and divergent regimes ($2/\lambda = 1.0$). Right: Absolute contraction factor $|1 - \eta\lambda|$ with stable and unstable regions.</em></p>
 
 #### Generalization to Multi-Dimensional Quadratics
 
@@ -187,6 +203,11 @@ $$\frac{2 + 2(0.9)}{(1 - 0.9)\eta} = \frac{2 + 1.8}{0.1\eta} = \frac{3.8}{0.1\et
 
 The theoretical stability threshold for Adam ($38/\eta$) is **19 times higher** than that of standard gradient descent ($2/\eta$). `hesse` explicitly tracks $\lambda_{\max}(P_t^{-1} H)$ to test whether adaptive optimizers exhibit an equivalent Edge-of-Stability phenomenon around $38/\eta$.
 
+<p align="center">
+  <img src="docs/figures/adam_threshold.png" width="90%" alt="Adam stability threshold multiplier as function of first moment momentum beta_1">
+</p>
+<p align="center"><em>Adam stability threshold multiplier $(2 + 2\beta_1)/(1 - \beta_1)$ as a function of momentum $\beta_1$, expanding from $2/\eta$ at $\beta_1=0$ to $38/\eta$ at standard $\beta_1=0.9$ ($19\times$ expansion).</em></p>
+
 ### 5. Pearlmutter's Hessian-Vector Product (HVP)
 
 Explicitly materializing the full Hessian matrix $H \in \mathbb{R}^{P \times P}$ for a network with $P = 10^7$ parameters requires:
@@ -270,6 +291,12 @@ Recurrence for step $j = 1, \dots, m$:
 
 Computing the eigendecomposition of the small tridiagonal matrix $T_m = U \Theta U^T$ costs $O(m^3)$ operations. The resulting Ritz values $\theta_1 \ge \theta_2 \ge \dots \ge \theta_m$ rapidly converge to the extremal eigenvalues of $H$, and Ritz vectors $y_i = V_m u_i$ approximate the true eigenvectors.
 
+<p align="center">
+  <img src="docs/figures/power_iteration_convergence.png" width="90%" alt="Convergence comparison between Power Iteration and Lanczos on top eigenvalue">
+</p>
+<p align="center"><em>Top eigenvalue estimation: Lanczos Krylov acceleration reaches the true extremal eigenvalue $\lambda_{\max}$ in under 10 iterations, significantly outperforming Power Iteration.</em><br/>
+<em>Illustration on a synthetic problem; real network results are in Results.</em></p>
+
 #### C. Hutchinson's Trace Estimator
 
 The trace $\operatorname{tr}(H) = \sum_{j=1}^P \lambda_j = \sum_{j=1}^P \frac{\partial^2 \mathcal{L}}{\partial \theta_j^2}$ measures total overall curvature. Using Hutchinson's randomized estimator:
@@ -283,6 +310,12 @@ With $M$ independent Monte Carlo probes:
 $$\widehat{\operatorname{tr}}(H) = \frac{1}{M} \sum_{j=1}^M z_j^T (H z_j)$$
 
 Each probe requires exactly one Hessian-vector product $H z_j$.
+
+<p align="center">
+  <img src="docs/figures/hutchinson_convergence.png" width="90%" alt="Hutchinson trace estimator convergence with standard error band">
+</p>
+<p align="center"><em>Hutchinson trace estimation with Rademacher probes: empirical convergence toward true trace with $\pm 1$ standard-error band at rate $O(1/\sqrt{M})$.</em><br/>
+<em>Illustration on a synthetic problem; real network results are in Results.</em></p>
 
 #### D. Stochastic Lanczos Quadrature (SLQ) for Spectral Density
 
@@ -300,6 +333,12 @@ $$z_j^T f(H) z_j \approx \|z_j\|_2^2 \sum_{k=1}^m \left( [w_k^{(j)}]_1 \right)^2
 
 Smoothing this discrete sum with a Gaussian kernel density estimator produces the continuous spectral density curve $\rho(\lambda)$, exposing bulk distribution, outlier eigenvalues, and spectral gaps (Ghorbani et al., 2019).
 
+<p align="center">
+  <img src="docs/figures/spectral_density_demo.png" width="90%" alt="Hessian eigenvalue spectral density SLQ estimate vs exact spectrum on synthetic matrix">
+</p>
+<p align="center"><em>Eigenvalue spectral density $\rho(\lambda)$ estimated via Stochastic Lanczos Quadrature (SLQ) overlaid on the exact spectrum of a synthetic matrix.</em><br/>
+<em>Illustration on a synthetic problem; real network results are in Results.</em></p>
+
 ### 7. Filter-Normalized Random Directions (Li et al., 2018)
 
 Visualizing the loss landscape requires evaluating $\mathcal{L}(\theta^* + \alpha \delta_1 + \beta \delta_2)$ over a 2D grid $(\alpha, \beta) \in [-1, 1]^2$.
@@ -315,6 +354,12 @@ Let $\theta_{l,j}$ denote the $j$-th convolutional filter (or linear neuron weig
 $$d_{l,j} \leftarrow \frac{d_{l,j}}{\|d_{l,j}\|_F} \|\theta_{l,j}\|_F$$
 
 For bias terms and 1D parameters, vector-level normalization applies: $d_l \leftarrow \frac{d_l}{\|d_l\|_2} \|\theta_l\|_2$. This ensures that perturbation scales are proportional to parameter magnitudes across all network depths.
+
+<p align="center">
+  <img src="docs/figures/loss_slice_demo.png" width="90%" alt="2D loss landscape slices comparing random filter-normalized directions vs Hessian eigenvectors">
+</p>
+<p align="center"><em>2D loss landscape slicing: Isotropic random directions (left) obscure directional curvature, whereas slicing along Hessian eigenvectors (right) exposes the true sharp ravine along $q_1$.</em><br/>
+<em>Illustration on a synthetic problem; real network results are in Results.</em></p>
 
 ---
 
@@ -668,6 +713,11 @@ The following controlled empirical campaigns are designed to test the limits of 
 | **E4** | What governs stability in sign-based optimizers (Lion)? | CIFAR-10, ResNet-18, Lion optimizer ($\beta_1=0.9, \beta_2=0.99$), $\eta \in \{10^{-4}, 3 \times 10^{-4}, 10^{-3}\}$. | Directional curvature $\frac{u_t^T H u_t}{\|u_t\|_2^2}$ along sign vector $u_t = \operatorname{sign}(m_t)$ and $\lambda_{\max}(H)$. | Coordinate $L_1$ contraction boundary | Because Lion takes uniform $\pm 1$ step sizes, classical $L_2$ quadratic bounds break down. Trajectory exhibits high-frequency oscillations bounded by coordinate saturation rather than hovering at $2/\eta$. |
 | **E5** | Are EoS dynamics universal across MLPs, CNNs, and ViTs? | CIFAR-10 (5k subset), standardized $\approx 500\text{k}$ parameter budget: 3-layer MLP, 4-layer ConvNet, and 4-layer Tiny Vision Transformer (patch size 4), GD ($\eta = 0.05$). | $\lambda_{\max}(H)$, Top-10 spectral gap $\lambda_1 - \lambda_2$, and ESD $\rho(\lambda)$ via SLQ. | $2/\eta = 40.0$ | All architectures exhibit progressive sharpening and EoS hovering. Tiny ViT displays a substantially larger outlier spectral gap ($\lambda_1 \gg \lambda_2$) compared to ConvNet's continuous bulk density. |
 | **E6** | Does loss function geometry alter late-stage EoS stability? | ResNet-18 on CIFAR-10, identical initialization, comparing one-hot MSE loss vs categorical Cross-Entropy loss, GD ($\eta = 0.05$). | $\lambda_{\max}(H)$, trace $\operatorname{tr}(H)$, and Gauss-Newton vs residual ratio. | $2/\eta = 40.0$ | MSE loss maintains persistent EoS hovering indefinitely. Cross-Entropy allows unbounded logit growth, causing late-time decay of Hessian scale ("late-time flattening") below $2/\eta$. |
+
+<p align="center">
+  <img src="docs/figures/gd_vs_lion_step.png" width="90%" alt="Step size vs slope comparison between Gradient Descent and Lion">
+</p>
+<p align="center"><em>Update mechanics: Gradient descent step size contracts linearly as $g \to 0$, whereas Lion's discontinuous $\pm \eta$ sign update maintains constant magnitude near minima, breaking linear quadratic $2/\eta$ stability bounds (Experiment E4).</em></p>
 
 ---
 

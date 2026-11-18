@@ -58,6 +58,7 @@ ignore = []
 [tool.pytest.ini_options]
 minversion = "7.0"
 testpaths = ["tests"]
+pythonpath = ["."]
 python_files = ["test_*.py"]
 filterwarnings = [
     "ignore:.*CallSpec2.*:pytest.PytestRemovedIn10Warning",

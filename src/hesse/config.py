@@ -50,9 +50,7 @@ class DataConfig:
                 f"Invalid loss_type '{self.loss_type}'. Expected one of {sorted(valid_losses)}."
             )
         if self.batch_size is not None and self.batch_size <= 0:
-            raise ValueError(
-                f"batch_size must be positive when specified, got {self.batch_size}."
-            )
+            raise ValueError(f"batch_size must be positive when specified, got {self.batch_size}.")
 
 
 @dataclass
@@ -195,9 +193,7 @@ class TrackerConfig:
     def __post_init__(self) -> None:
         """Validate tracker configuration parameters."""
         if self.track_interval <= 0:
-            raise ValueError(
-                f"track_interval must be positive integer, got {self.track_interval}."
-            )
+            raise ValueError(f"track_interval must be positive integer, got {self.track_interval}.")
         if self.compute_topk < 0:
             raise ValueError(f"compute_topk cannot be negative, got {self.compute_topk}.")
 
