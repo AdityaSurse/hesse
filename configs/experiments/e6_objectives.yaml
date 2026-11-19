@@ -1,0 +1,48 @@
+experiment_id: e6_objectives
+title: "Experiment 6: Objective Geometry: MSE vs Cross-Entropy"
+description: "Comparison of curvature trajectories under full-batch GD between MSE (one-hot) and Cross-Entropy loss."
+
+base_config:
+  epochs: 100
+  steps: 60
+  device: cpu
+
+  data:
+    dataset: cifar10
+    subset_size: 500
+    batch_size: null  # Full-batch
+    val_size: 100
+    data_dir: data
+
+  model:
+    architecture: mlp
+    input_dim: 3072
+    hidden_dims:
+      - 128
+      - 64
+    num_classes: 10
+    activation: tanh
+    use_batch_norm: false
+    dropout: 0.0
+
+  optim:
+    optimizer: gd
+    lr: 0.04
+    momentum: 0.0
+    weight_decay: 0.0
+
+  tracker:
+    track_interval: 2
+    compute_sharpness: true
+    compute_trace: true
+    compute_topk: 0
+    compute_density: false
+
+loss_types:
+  - mse
+  - cross_entropy
+
+seeds:
+  - 42
+  - 43
+  - 44

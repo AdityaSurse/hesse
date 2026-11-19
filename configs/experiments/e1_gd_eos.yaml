@@ -1,0 +1,53 @@
+experiment_id: e1_gd_eos
+title: "Experiment 1: Gradient Descent Edge of Stability (Reproduction)"
+description: "Full-batch GD on tanh MLP with MSE loss across 4 learning rates on a log scale."
+
+# Base configuration template
+base_config:
+  epochs: 100
+  steps: 60
+  device: cpu
+
+  data:
+    dataset: cifar10
+    subset_size: 500
+    batch_size: null  # Full-batch
+    loss_type: mse
+    val_size: 100
+    data_dir: data
+
+  model:
+    architecture: mlp
+    input_dim: 3072
+    hidden_dims:
+      - 128
+      - 64
+    num_classes: 10
+    activation: tanh
+    use_batch_norm: false
+    dropout: 0.0
+
+  optim:
+    optimizer: gd
+    lr: 0.05
+    momentum: 0.0
+    weight_decay: 0.0
+
+  tracker:
+    track_interval: 2
+    compute_sharpness: true
+    compute_trace: false
+    compute_topk: 0
+    compute_density: false
+
+# Experimental sweeps
+learning_rates:
+  - 0.01
+  - 0.02
+  - 0.05
+  - 0.10
+
+seeds:
+  - 42
+  - 43
+  - 44

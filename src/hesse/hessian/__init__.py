@@ -64,6 +64,17 @@ class Curvature:
             chunk_size=chunk_size,
         )
 
+    def hvp(self, v: torch.Tensor) -> torch.Tensor:
+        """Compute the matrix-free Hessian-vector product H * v.
+
+        Args:
+            v: 1D probe tensor of shape (P,).
+
+        Returns:
+            1D result tensor of shape (P,).
+        """
+        return self.op.matvec(v)
+
     def sharpness(
         self,
         iters: int = 100,

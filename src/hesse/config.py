@@ -186,6 +186,7 @@ class TrackerConfig:
     track_interval: int = 10
     compute_sharpness: bool = True
     compute_trace: bool = True
+    trace_samples: int = 20
     compute_topk: int = 5
     compute_density: bool = False
     save_eigenvectors: bool = False
@@ -197,6 +198,8 @@ class TrackerConfig:
             raise ValueError(f"track_interval must be positive integer, got {self.track_interval}.")
         if self.compute_topk < 0:
             raise ValueError(f"compute_topk cannot be negative, got {self.compute_topk}.")
+        if self.trace_samples < 0:
+            raise ValueError(f"trace_samples cannot be negative, got {self.trace_samples}.")
 
 
 @dataclass

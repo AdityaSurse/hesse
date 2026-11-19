@@ -1,0 +1,51 @@
+experiment_id: e4_lion
+title: "Experiment 4: Lion Sign-Update Dynamics and Curvature Plateau"
+description: "Lion sign-based optimizer tracking plain lambda_max and sign-directional curvature across 3 learning rates."
+
+base_config:
+  epochs: 100
+  steps: 60
+  device: cpu
+
+  data:
+    dataset: cifar10
+    subset_size: 500
+    batch_size: 128
+    loss_type: cross_entropy
+    val_size: 100
+    data_dir: data
+
+  model:
+    architecture: mlp
+    input_dim: 3072
+    hidden_dims:
+      - 128
+      - 64
+    num_classes: 10
+    activation: relu
+    use_batch_norm: false
+    dropout: 0.0
+
+  optim:
+    optimizer: lion
+    lr: 0.0003
+    beta1: 0.9
+    beta2: 0.99
+    weight_decay: 0.0
+
+  tracker:
+    track_interval: 2
+    compute_sharpness: true
+    compute_trace: false
+    compute_topk: 0
+    compute_density: false
+
+learning_rates:
+  - 0.0001
+  - 0.0003
+  - 0.0010
+
+seeds:
+  - 42
+  - 43
+  - 44

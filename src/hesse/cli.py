@@ -156,6 +156,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
         # 1. Resolve run_dir and ckpt_path
         run_dir: Path | None = Path(args.run) if args.run else None
+        if run_dir is not None and not run_dir.exists() and (Path("runs") / run_dir).exists():
+            run_dir = Path("runs") / run_dir
         ckpt_path: Path | None = Path(args.checkpoint) if args.checkpoint else None
 
         if run_dir is None and ckpt_path is not None:

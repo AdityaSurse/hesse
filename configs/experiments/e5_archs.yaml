@@ -1,0 +1,71 @@
+experiment_id: e5_archs
+title: "Experiment 5: Architectural Curvature Comparison (MLP vs CNN vs ViT)"
+description: "Comparison of curvature dynamics, spectral gaps, and stability across MLP, CNN, and Tiny Transformer under GD and Adam."
+
+base_config:
+  epochs: 100
+  steps: 35
+  device: cpu
+
+  data:
+    dataset: cifar10
+    subset_size: 200
+    batch_size: null  # Full-batch for GD
+    loss_type: cross_entropy
+    val_size: 50
+    data_dir: data
+
+  optim:
+    optimizer: gd
+    lr: 0.04
+    momentum: 0.0
+    weight_decay: 0.0
+
+  tracker:
+    track_interval: 4
+    compute_sharpness: true
+    compute_trace: true
+    trace_samples: 15
+    compute_topk: 5
+    compute_density: false
+
+architectures:
+  mlp:
+    architecture: mlp
+    input_dim: 3072
+    hidden_dims:
+      - 128
+      - 64
+    num_classes: 10
+    activation: relu
+    dropout: 0.0
+  cnn:
+    architecture: cnn
+    input_dim: 3072
+    channels:
+      - 16
+      - 32
+    num_classes: 10
+    activation: relu
+    kernel_size: 3
+    dropout: 0.0
+  transformer:
+    architecture: transformer
+    input_dim: 3072
+    patch_size: 8
+    embed_dim: 32
+    num_heads: 2
+    num_layers: 2
+    num_classes: 10
+    dropout: 0.0
+
+optimizers:
+  - optimizer: gd
+    lr: 0.04
+  - optimizer: adam
+    lr: 0.001
+
+seeds:
+  - 42
+  - 43
+  - 44

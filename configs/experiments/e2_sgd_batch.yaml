@@ -1,0 +1,51 @@
+experiment_id: e2_sgd_batch
+title: "Experiment 2: SGD Batch Size Scaling and Curvature Noise"
+description: "Minibatch SGD across batch sizes {32, 128, 512, full} measuring where sharpness settles relative to 2/eta."
+
+base_config:
+  epochs: 100
+  steps: 60
+  device: cpu
+
+  data:
+    dataset: cifar10
+    subset_size: 500
+    batch_size: 128
+    loss_type: mse
+    val_size: 100
+    data_dir: data
+
+  model:
+    architecture: mlp
+    input_dim: 3072
+    hidden_dims:
+      - 128
+      - 64
+    num_classes: 10
+    activation: tanh
+    use_batch_norm: false
+    dropout: 0.0
+
+  optim:
+    optimizer: sgd
+    lr: 0.05
+    momentum: 0.0
+    weight_decay: 0.0
+
+  tracker:
+    track_interval: 2
+    compute_sharpness: true
+    compute_trace: true
+    compute_topk: 0
+    compute_density: false
+
+batch_sizes:
+  - 32
+  - 128
+  - 512
+  - null  # Full-batch (500 samples)
+
+seeds:
+  - 42
+  - 43
+  - 44

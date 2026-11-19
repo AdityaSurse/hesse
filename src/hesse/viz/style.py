@@ -28,6 +28,13 @@ COLOR_PINK = "#DB61A2"  # Unstable regime, divergence trajectories
 COLOR_PURPLE = "#A371F7"  # Secondary distributions, spectral histograms
 COLOR_YELLOW = "#D29922"  # Highlights, markers, outlier annotations
 
+# Consistent optimizer palette across all experiments
+COLOR_GD = COLOR_BLUE
+COLOR_SGD = COLOR_GREEN
+COLOR_ADAM = COLOR_PURPLE
+COLOR_LION = COLOR_PINK
+COLOR_THRESHOLD = COLOR_ORANGE
+
 
 def setup_style() -> None:
     """Apply global matplotlib style parameters for dark-themed figures."""

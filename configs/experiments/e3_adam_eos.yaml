@@ -1,0 +1,56 @@
+experiment_id: e3_adam_eos
+title: "Experiment 3: Adam Preconditioned Sharpness vs Stability Threshold"
+description: "Adam tracking both plain and preconditioned sharpness against analytical threshold (2+2*beta1)/((1-beta1)*lr)."
+
+base_config:
+  epochs: 100
+  steps: 60
+  device: cpu
+
+  data:
+    dataset: cifar10
+    subset_size: 500
+    batch_size: 128
+    loss_type: cross_entropy
+    val_size: 100
+    data_dir: data
+
+  model:
+    architecture: mlp
+    input_dim: 3072
+    hidden_dims:
+      - 128
+      - 64
+    num_classes: 10
+    activation: relu
+    use_batch_norm: false
+    dropout: 0.0
+
+  optim:
+    optimizer: adam
+    lr: 0.003
+    beta1: 0.9
+    beta2: 0.999
+    weight_decay: 0.0
+    eps: 1.0e-8
+
+  tracker:
+    track_interval: 2
+    compute_sharpness: true
+    compute_trace: false
+    compute_topk: 0
+    compute_density: false
+
+learning_rates:
+  - 0.001
+  - 0.003
+  - 0.010
+
+beta1_values:
+  - 0.9
+  - 0.0
+
+seeds:
+  - 42
+  - 43
+  - 44

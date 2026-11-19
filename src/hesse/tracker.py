@@ -156,6 +156,7 @@ class Tracker:
         trace_est: float | None = None
         trace_std_err: float | None = None
         precond_sharpness: float | None = None
+        sign_curv: float | None = None
 
         try:
             if self.config.compute_sharpness:
@@ -180,7 +181,8 @@ class Tracker:
                     )
 
             if self.config.compute_trace:
-                trace_est, trace_std_err = self.curv.trace(n_samples=40, seed=probe_seed + 2)
+                n_samples = getattr(self.config, "trace_samples", 20)
+                trace_est, trace_std_err = self.curv.trace(n_samples=n_samples, seed=probe_seed + 2)
 
             if self.optimizer_name in {"adam", "adamw"}:
                 precond_sharp, _ = self.curv.preconditioned_sharpness(
@@ -192,6 +194,25 @@ class Tracker:
                     beta1=self.beta1,
                 )
                 precond_sharpness = precond_sharp
+            elif self.optimizer_name == "lion":
+                # Compute sign-aware directional curvature along update direction
+                u_parts = []
+                for p in model.parameters():
+                    if not p.requires_grad:
+                        continue
+                    st = optimizer.state.get(p)
+                    if st and "exp_avg" in st:
+                        u_parts.append(torch.sign(st["exp_avg"]).reshape(-1))
+                    elif p.grad is not None:
+                        u_parts.append(torch.sign(p.grad).reshape(-1))
+                    else:
+                        u_parts.append(torch.ones_like(p).reshape(-1))
+                if u_parts:
+                    u_vec = torch.cat(u_parts)
+                    u_norm_sq = torch.dot(u_vec, u_vec).item()
+                    if u_norm_sq > 0:
+                        Hu = self.curv.hvp(u_vec)
+                        sign_curv = float(torch.dot(u_vec, Hu).item() / u_norm_sq)
 
         finally:
             curv_duration = time.perf_counter() - curv_t0
@@ -213,6 +234,7 @@ class Tracker:
             "trace_std_err": float(trace_std_err) if trace_std_err is not None else None,
             "stability_threshold": self.stability_threshold,
             "preconditioned_sharpness": precond_sharpness,
+            "sign_curvature": sign_curv,
             "curvature_time": float(curv_duration),
             "train_time": float(self.cumulative_train_time),
         }

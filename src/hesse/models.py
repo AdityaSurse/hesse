@@ -8,6 +8,13 @@ from typing import Callable, Sequence
 import torch
 import torch.nn as nn
 
+try:
+    from torch.nn.attention import SDPBackend, sdpa_kernel
+
+    _HAS_SDPA_KERNEL = True
+except ImportError:
+    _HAS_SDPA_KERNEL = False
+
 from hesse.config import ModelConfig
 from hesse.utils import set_seed
 
@@ -263,7 +270,11 @@ class TinyTransformer(nn.Module):
             pos_embed = pos_embed[:, : x_tok.size(1), :]
 
         x_tok = x_tok + pos_embed
-        encoded = self.transformer(x_tok)
+        if _HAS_SDPA_KERNEL:
+            with sdpa_kernel(SDPBackend.MATH):
+                encoded = self.transformer(x_tok)
+        else:
+            encoded = self.transformer(x_tok)
         cls_out = self.norm(encoded[:, 0])
         return self.head(cls_out)
 

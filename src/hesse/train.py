@@ -88,7 +88,11 @@ def train(
         config = RunConfig.from_dict(cfg_dict)
 
     # 2. Setup run directory and persistence paths
-    run_dir = Path("runs") / config.run_name
+    run_path = Path(config.run_name)
+    if run_path.is_absolute() or (run_path.parts and run_path.parts[0] == "runs"):
+        run_dir = run_path
+    else:
+        run_dir = Path("runs") / config.run_name
     run_dir.mkdir(parents=True, exist_ok=True)
     checkpoints_dir = run_dir / "checkpoints"
     checkpoints_dir.mkdir(parents=True, exist_ok=True)
