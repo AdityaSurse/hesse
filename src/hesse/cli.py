@@ -31,6 +31,20 @@ def build_parser() -> argparse.ArgumentParser:
         default="configs/default.yaml",
         help="Path to YAML configuration file",
     )
+    train_parser.add_argument(
+        "--override",
+        "-o",
+        nargs="+",
+        action="extend",
+        default=[],
+        help="Dotted configuration overrides (e.g. --override optim.lr=0.02 steps=20)",
+    )
+    train_parser.add_argument(
+        "--resume",
+        type=str,
+        default=None,
+        help="Path to checkpoint (.pt) file to resume training from",
+    )
 
     # Subcommand: landscape
     landscape_parser = subparsers.add_parser(
@@ -76,7 +90,18 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
-    if args.subcommand in {"train", "landscape", "report"}:
+    if args.subcommand == "train":
+        from hesse.config import RunConfig
+        from hesse.train import train
+
+        cfg = RunConfig.from_yaml(args.config)
+        summary = train(cfg, overrides=args.override, resume_from=args.resume)
+        status = summary.get("status", "unknown")
+        total_steps = summary.get("total_steps", 0)
+        print(f"Run '{cfg.run_name}' terminated with status '{status}' ({total_steps} steps).")
+        return 0
+
+    if args.subcommand in {"landscape", "report"}:
         print(f"Command '{args.subcommand}' not implemented yet.")
         return 0
 

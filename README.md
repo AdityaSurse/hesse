@@ -873,23 +873,17 @@ prec_sharp, bound = curv.preconditioned_sharpness(optimizer=opt)
 
 ### 3. Live Curvature Tracking CLI
 
-Track loss, $\lambda_{\max}$, and theoretical stability thresholds during model training:
+Train neural networks with live curvature tracking ($\lambda_{\max}$, trace, stability thresholds):
 
 ```bash
-# Execute Experiment 1: Full-batch GD on CIFAR-10 (coming in Phase 2+)
-hesse track --config configs/experiments/e1_gd_eos.yaml
+# Train full-batch GD on CIFAR-10 with live curvature tracking
+hesse train --config configs/gd_mlp_cifar5k.yaml
 
-# Run with custom parameters directly via CLI flags
-hesse track \
-  --model cnn \
-  --dataset cifar10 \
-  --subset-size 5000 \
-  --optimizer gd \
-  --lr 0.05 \
-  --loss mse \
-  --track-interval 10 \
-  --metrics sharpness,trace,topk \
-  --log-dir runs/cifar_gd_e1/
+# Override hyperparameters directly via dotted CLI flags
+hesse train --config configs/gd_mlp_cifar5k.yaml --override optim.lr=0.02 data.subset_size=1000
+
+# Resume an interrupted training run from a checkpoint
+hesse train --config configs/gd_mlp_cifar5k.yaml --resume runs/gd_mlp_cifar5k/checkpoints/checkpoint_step_50.pt
 ```
 
 ### 4. Launching the Real-Time Streamlit Dashboard

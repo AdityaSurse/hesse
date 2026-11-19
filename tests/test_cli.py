@@ -16,9 +16,25 @@ def test_cli_help(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_cli_subcommands(capsys: pytest.CaptureFixture[str]) -> None:
-    """Verify that train, landscape, and report subcommands execute cleanly."""
-    for cmd in ["train", "landscape", "report"]:
+    """Verify that landscape and report subcommands report pending, and train executes."""
+    for cmd in ["landscape", "report"]:
         ret = main([cmd])
         assert ret == 0
         captured = capsys.readouterr()
         assert f"Command '{cmd}' not implemented yet." in captured.out
+
+    # Test train subcommand with 1-step small subset override
+    ret_train = main(
+        [
+            "train",
+            "--config",
+            "configs/default.yaml",
+            "--override",
+            "steps=1",
+            "data.subset_size=20",
+            "tracker.track_interval=1",
+        ]
+    )
+    assert ret_train == 0
+    captured_train = capsys.readouterr()
+    assert "terminated with status 'completed'" in captured_train.out

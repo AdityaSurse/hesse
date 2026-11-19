@@ -151,7 +151,7 @@ class OptimConfig:
 
     def __post_init__(self) -> None:
         """Validate optimizer configuration parameters."""
-        valid_opts = {"gd", "sgd", "adam", "lion"}
+        valid_opts = {"gd", "sgd", "adam", "adamw", "lion"}
         if self.optimizer not in valid_opts:
             raise ValueError(
                 f"Invalid optimizer '{self.optimizer}'. Expected one of {sorted(valid_opts)}."
@@ -188,6 +188,7 @@ class TrackerConfig:
     compute_trace: bool = True
     compute_topk: int = 5
     compute_density: bool = False
+    save_eigenvectors: bool = False
     log_dir: str = "runs"
 
     def __post_init__(self) -> None:
@@ -219,6 +220,9 @@ class RunConfig:
     steps: int | None = None
     seed: int = 42
     device: str = "auto"
+    checkpoint_interval: int | None = None
+    target_loss: float | None = None
+    divergence_threshold: float = 1e7
     data: DataConfig = field(default_factory=DataConfig)
     model: ModelConfig = field(default_factory=ModelConfig)
     optim: OptimConfig = field(default_factory=OptimConfig)
@@ -230,6 +234,14 @@ class RunConfig:
             raise ValueError(f"epochs must be positive, got {self.epochs}.")
         if self.steps is not None and self.steps <= 0:
             raise ValueError(f"steps must be positive when set, got {self.steps}.")
+        if self.checkpoint_interval is not None and self.checkpoint_interval <= 0:
+            raise ValueError(
+                f"checkpoint_interval must be positive when set, got {self.checkpoint_interval}."
+            )
+        if self.divergence_threshold <= 0:
+            raise ValueError(
+                f"divergence_threshold must be positive, got {self.divergence_threshold}."
+            )
         valid_devices = {"auto", "cpu", "cuda", "mps"}
         if self.device not in valid_devices:
             raise ValueError(

@@ -36,6 +36,13 @@ from hesse.models import (
     TinyTransformer,
     get_model,
 )
+from hesse.optim import (
+    Lion,
+    get_optimizer,
+    get_stability_threshold,
+)
+from hesse.tracker import Tracker
+from hesse.train import train
 from hesse.utils import (
     count_params,
     flatten_grads,
@@ -44,6 +51,7 @@ from hesse.utils import (
     set_seed,
     unflatten_params,
 )
+from hesse.viz import plot_run
 
 __version__ = "0.1.0"
 
@@ -53,6 +61,7 @@ __all__ = [
     "DatasetBundle",
     "HVPOperator",
     "LanczosResult",
+    "Lion",
     "MODEL_REGISTRY",
     "MLP",
     "ModelConfig",
@@ -63,6 +72,7 @@ __all__ = [
     "SmallCNN",
     "TinyTransformer",
     "TraceResult",
+    "Tracker",
     "TrackerConfig",
     "count_params",
     "flatten_grads",
@@ -71,15 +81,19 @@ __all__ = [
     "get_device",
     "get_mnist_subset",
     "get_model",
+    "get_optimizer",
+    "get_stability_threshold",
     "get_synthetic_regression",
     "hutchinson_trace",
     "hvp",
     "lanczos",
     "load_dataset",
+    "plot_run",
     "power_iteration",
     "preconditioned_sharpness",
     "set_seed",
     "spectral_density",
     "stochastic_lanczos_quadrature",
+    "train",
     "unflatten_params",
 ]
