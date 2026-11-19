@@ -16,12 +16,11 @@ def test_cli_help(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_cli_subcommands(capsys: pytest.CaptureFixture[str]) -> None:
-    """Verify that landscape and report subcommands report pending, and train executes."""
-    for cmd in ["landscape", "report"]:
-        ret = main([cmd])
-        assert ret == 0
-        captured = capsys.readouterr()
-        assert f"Command '{cmd}' not implemented yet." in captured.out
+    """Verify that report subcommand reports pending, and train executes."""
+    ret = main(["report"])
+    assert ret == 0
+    captured = capsys.readouterr()
+    assert "Command 'report' not implemented yet." in captured.out
 
     # Test train subcommand with 1-step small subset override
     ret_train = main(

@@ -982,7 +982,13 @@ Target artifact: `docs/figures/landscape_3d_surface.png`
 
 High-resolution 3D loss landscape surface and 2D contour map evaluated along filter-normalized top Hessian eigenvectors $q_1, q_2$, with the optimization trajectory $\{\theta_0, \dots, \theta_T\}$ projected onto the surface.
 
-*Status: Pending: produced in Phase 6.*
+<p align="center">
+  <img src="docs/figures/landscape_contour_preview.png" width="85%" alt="Loss Landscape Contour & Optimization Trajectory Preview">
+  <br>
+  <em>Figure: Empirical 2D loss landscape contour slice and optimization trajectory projected along top Hessian eigenvectors $q_1, q_2$ (preview, not final results).</em>
+</p>
+
+*Status: Preview rendered above; full final experiment suite runs in Phase 6.*
 
 ---
 
