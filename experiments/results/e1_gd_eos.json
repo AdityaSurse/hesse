@@ -2,7 +2,7 @@
   "experiment_id": "e1_gd_eos",
   "title": "Experiment 1: Gradient Descent Edge of Stability (Reproduction)",
   "description": "Full-batch GD on tanh MLP with MSE loss across 4 learning rates on a log scale.",
-  "runtime_seconds": 25.524236790999566,
+  "runtime_seconds": 25.15142679100063,
   "protocol": {
     "seeds": [
       42,

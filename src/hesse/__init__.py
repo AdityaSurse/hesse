@@ -53,7 +53,7 @@ from hesse.utils import (
 )
 from hesse.viz import plot_run
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 __all__ = [
     "Curvature",

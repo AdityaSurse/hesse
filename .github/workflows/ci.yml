@@ -35,4 +35,4 @@ jobs:
 
       - name: Run test suite
         run: |
-          pytest -v --cov=hesse
+          pytest -v --cov=hesse --cov-fail-under=85

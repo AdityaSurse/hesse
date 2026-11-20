@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use hesse in your research, please cite it as below."
+title: "hesse: Live Loss-Landscape Curvature Tracking & Edge-of-Stability Diagnostics in PyTorch"
+authors:
+  - family-names: "Surse"
+    given-names: "Aditya"
+version: 1.0.0
+date-released: 2026-11-20
+license: MIT
+repository-code: "https://github.com/AdityaSurse/hesse"
+url: "https://github.com/AdityaSurse/hesse"
+keywords:
+  - deep-learning
+  - loss-landscape
+  - hessian
+  - curvature
+  - edge-of-stability
+  - pytorch
+  - numerical-optimization

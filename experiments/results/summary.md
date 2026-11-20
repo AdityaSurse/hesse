@@ -8,7 +8,7 @@
 
 | Experiment | Description | Configurations | Measured Runtime | Status |
 | :--- | :--- | :---: | :---: | :---: |
-| **E1** | E1: GD Edge of Stability | 4 | 25.52s | Complete |
+| **E1** | E1: GD Edge of Stability | 4 | 25.15s | Complete |
 | **E2** | E2: SGD Batch Size Scaling | 4 | 68.41s | Complete |
 | **E3** | E3: Adam Preconditioned Sharpness | 6 | 59.87s | Complete |
 | **E4** | E4: Lion Sign-Update Dynamics | 3 | 20.18s | Complete |
@@ -28,7 +28,7 @@
 | `0.05` | `40.0` | N/A | **0.656 ± 0.000** | 0.000 | 0.0897 |
 | `0.1` | `20.0` | 0 | **0.962 ± 0.001** | 0.034 | 0.0893 |
 
-*Measured runtime: 25.52s across 3 seeds.*
+*Measured runtime: 25.15s across 3 seeds.*
 
 ---
 

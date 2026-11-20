@@ -99,7 +99,10 @@ def evaluate_1d(
     Returns:
         Dictionary containing 'alphas', 'loss', and 'acc' arrays.
     """
-    alphas_arr = np.array(alphas, dtype=np.float32)
+    if isinstance(alphas, torch.Tensor):
+        alphas_arr = alphas.detach().cpu().numpy().astype(np.float32)
+    else:
+        alphas_arr = np.asarray(alphas, dtype=np.float32)
     original_weights = [p.clone() for p in model.parameters()]
     flat_orig = flatten_params(model).clone()
 
@@ -165,8 +168,14 @@ def evaluate_2d(
         Dictionary containing 'alphas', 'betas', 2D 'loss' array (shape: n_betas, n_alphas),
         and optional 2D 'acc' array.
     """
-    alphas_arr = np.array(alphas, dtype=np.float32)
-    betas_arr = np.array(betas, dtype=np.float32)
+    if isinstance(alphas, torch.Tensor):
+        alphas_arr = alphas.detach().cpu().numpy().astype(np.float32)
+    else:
+        alphas_arr = np.asarray(alphas, dtype=np.float32)
+    if isinstance(betas, torch.Tensor):
+        betas_arr = betas.detach().cpu().numpy().astype(np.float32)
+    else:
+        betas_arr = np.asarray(betas, dtype=np.float32)
 
     n_alphas = len(alphas_arr)
     n_betas = len(betas_arr)
