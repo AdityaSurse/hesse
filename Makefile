@@ -1,11 +1,12 @@
 export MPLCONFIGDIR ?= /tmp/matplotlib
 export PYTHONPATH ?= .
 
-.PHONY: help install test lint format figures bench clean reproduce e1 e2 e3 e4 e5 e6 summary
+.PHONY: help install test lint format figures bench clean reproduce e1 e2 e3 e4 e5 e6 summary app
 
 help:
 	@echo "hesse developer commands:"
 	@echo "  make install    - Install package in editable mode with dev dependencies"
+	@echo "  make app        - Launch Streamlit real-time telemetry dashboard"
 	@echo "  make test       - Run pytest suite"
 	@echo "  make lint       - Check code style with ruff"
 	@echo "  make format     - Format code with ruff"
@@ -32,6 +33,9 @@ lint:
 
 format:
 	ruff format .
+
+app:
+	streamlit run app/dashboard.py
 
 figures:
 	python3 scripts/make_readme_figures.py

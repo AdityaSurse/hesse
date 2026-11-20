@@ -27,6 +27,7 @@
 - [Planned Experiments](#planned-experiments)
 - [Repository Structure](#repository-structure)
 - [Quickstart](#quickstart)
+- [Dashboard](#dashboard)
 - [Results](#results)
 - [Roadmap](#roadmap)
 - [Limitations and Future Work](#limitations-and-future-work)
@@ -909,6 +910,98 @@ hesse landscape \
   --range 1.0 \
   --output docs/figures/landscape_3d_surface.png
 ```
+
+---
+
+## Dashboard
+
+The `hesse` interactive dashboard is a real-time diagnostic and exploration web application built with Streamlit and Plotly. It connects directly to active and completed training runs in `runs/`, continuously tailing telemetry streams to visualize curvature dynamics, Edge-of-Stability boundaries, eigenvalue spectra, and loss-landscape topography.
+
+### Launching the Dashboard
+
+Launch the live application locally:
+
+```bash
+make app
+# or directly via Streamlit
+streamlit run app/dashboard.py
+```
+
+Alternatively, export a self-contained, standalone interactive HTML report embedding Plotly JS:
+
+```bash
+hesse report --run runs/gd_mlp_cifar5k --out runs/gd_mlp_cifar5k/report.html
+```
+
+---
+
+### 1. Live Run Telemetry & Stability Boundaries
+
+The **Live Run** page tails `metrics.jsonl` every 3 seconds to stream optimization telemetry as training proceeds. It displays high-level KPI tiles alongside dual-axis synchronized plots tracking loss and curvature against theoretical stability limits.
+
+<p align="center">
+  <img src="docs/figures/dashboard_live.png" width="95%" alt="Live Run curvature telemetry and stability boundary tracking">
+</p>
+<p align="center"><em>Live Run dashboard: Real-time telemetry monitoring top Hessian eigenvalue $\lambda_{\max}$ against the $2/\eta$ stability line (top) with synchronized logarithmic training loss (bottom) and live KPI diagnostics.</em></p>
+
+- **Real-Time KPIs:** Monitored metrics include current step, training loss, instantaneous sharpness $\lambda_{\max}$, stability boundary proximity $(\lambda_{\max} / \text{Threshold} \times 100\%)$, and curvature computation time overhead percentage.
+- **Synchronized Trajectories:** Interactive Plotly graphs link $\lambda_{\max}$ to the analytical stability threshold ($2/\eta$ for GD/SGD, $(2+2\beta_1)/((1-\beta_1)\eta)$ for Adam), clearly delineating the progressive sharpening phase from the Edge-of-Stability hovering regime.
+
+---
+
+### 2. Multi-Run Curvature Comparison
+
+The **Compare Runs** page allows researchers to multi-select disparate training runs, overlaying normalized curvature trajectories across architectures, learning rates, and optimizers.
+
+<p align="center">
+  <img src="docs/figures/dashboard_compare.png" width="95%" alt="Multi-run curvature comparison normalized by stability thresholds">
+</p>
+<p align="center"><em>Compare Runs dashboard: Normalized curvature dynamics $\lambda_{\max} / \text{Threshold}$ across runs with the critical boundary at $y=1.0$, styled according to hesse's canonical optimizer color scheme.</em></p>
+
+- **Normalized Scale:** Sharpness is rescaled by each run's optimizer threshold, standardizing runs across learning rates $\eta$ and preconditioning parameters.
+- **Consistent Visual Language:** GD (`#58A6FF`), SGD (`#3FB950`), Adam (`#A371F7`), and Lion (`#F0883E`) are systematically highlighted.
+
+---
+
+### 3. Eigenvalue Spectrum & Continuous Density
+
+The **Spectrum** page provides detailed spectral diagnostics of the Hessian operator throughout training.
+
+<p align="center">
+  <img src="docs/figures/dashboard_spectrum.png" width="95%" alt="Hessian eigenvalue spectral tracking and SLQ density distribution">
+</p>
+<p align="center"><em>Spectrum dashboard: Continuous trajectory of top-$k$ Ritz eigenvalues over training steps (left) alongside interactive Stochastic Lanczos Quadrature (SLQ) continuous spectral density $\rho(\lambda)$ with linear/log scale toggle (right).</em></p>
+
+- **Top-$k$ Eigenvalue Evolution:** Displays the separation between dominant outlier eigenvalues (the rank-deficient data manifold signals) and the continuous bulk spectrum.
+- **Continuous Spectral Density:** Computes $\rho(\lambda)$ using Stochastic Lanczos Quadrature (SLQ), with a slider across saved steps and logarithmic density scaling to inspect heavy-tailed spectral distributions.
+
+---
+
+### 4. Interactive Loss Landscape & Trajectories
+
+The **Landscape** page renders 3D interactive surfaces and 2D contour slices of the loss landscape centered around trained checkpoints.
+
+<p align="center">
+  <img src="docs/figures/dashboard_landscape.png" width="95%" alt="Interactive 3D loss landscape surface and 2D contour slice">
+</p>
+<p align="center"><em>Landscape dashboard: Filter-normalized 3D interactive mesh and contour projection along top Hessian eigenvectors with the training trajectory projected onto the landscape.</em></p>
+
+- **Projection Bases:** Dynamically toggles between filter-normalized random Gaussian directions (Li et al., 2018), top Hessian eigenvectors ($q_1, q_2$), and trajectory principal components (PCA).
+- **Trajectory Projection:** Projects the sequence of parameter checkpoints onto the coordinate plane, revealing barrier traversals, sharp ravines, and convergence basins.
+
+---
+
+### 5. Empirical Experiments & Summary
+
+The **Experiments** page provides an in-app viewer for empirical research findings and publication-ready figures.
+
+<p align="center">
+  <img src="docs/figures/dashboard_experiments.png" width="95%" alt="Empirical research experiment suite and figure viewer">
+</p>
+<p align="center"><em>Experiments dashboard: Tabular summaries, empirical Edge-of-Stability validation benchmarks, and interactive figure gallery for Experiments E1 through E6.</em></p>
+
+- **Scientific Synthesis:** Directly parses `experiments/results/summary.md` to display status, key findings, and theoretical validation across all benchmark runs.
+- **Research Artifact Gallery:** Full-resolution preview of empirical figures (`docs/figures/e*.png`).
 
 ---
 

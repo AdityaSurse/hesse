@@ -16,11 +16,11 @@ def test_cli_help(capsys: pytest.CaptureFixture[str]) -> None:
 
 
 def test_cli_subcommands(capsys: pytest.CaptureFixture[str]) -> None:
-    """Verify that report subcommand reports pending, and train executes."""
-    ret = main(["report"])
+    """Verify that report subcommand generates report, and train executes."""
+    ret = main(["report", "--run", "runs/default_run"])
     assert ret == 0
     captured = capsys.readouterr()
-    assert "Command 'report' not implemented yet." in captured.out
+    assert "Generated static HTML report" in captured.out
 
     # Test train subcommand with 1-step small subset override
     ret_train = main(

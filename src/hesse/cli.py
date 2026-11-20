@@ -100,13 +100,25 @@ def build_parser() -> argparse.ArgumentParser:
     # Subcommand: report
     report_parser = subparsers.add_parser(
         "report",
-        help="Compile experimental figures and markdown telemetry reports",
+        help="Generate a self-contained static HTML telemetry report with inline Plotly views",
     )
     report_parser.add_argument(
+        "--run",
         "--run-dir",
+        "-r",
+        dest="run",
         type=str,
-        default="runs",
-        help="Directory containing run logs and telemetry artifacts",
+        default="runs/default_run",
+        help="Path to run directory containing config.yaml and metrics.jsonl",
+    )
+    report_parser.add_argument(
+        "--out",
+        "--output",
+        "-o",
+        dest="out",
+        type=str,
+        default=None,
+        help="Destination path for generated report.html (default: <run>/report.html)",
     )
 
     return parser
@@ -340,7 +352,16 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 0
 
     if args.subcommand in {"report"}:
-        print(f"Command '{args.subcommand}' not implemented yet.")
+        from pathlib import Path
+
+        from hesse.report import generate_report
+
+        run_path = Path(args.run)
+        if not run_path.exists() and (Path("runs") / run_path).exists():
+            run_path = Path("runs") / run_path
+
+        report_file = generate_report(run_dir=run_path, out_path=args.out)
+        print(f"Generated static HTML report at {report_file}")
         return 0
 
     parser.print_help()
