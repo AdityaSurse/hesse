@@ -1,7 +1,7 @@
 export MPLCONFIGDIR ?= /tmp/matplotlib
 export PYTHONPATH ?= .
 
-.PHONY: help install test lint format figures bench clean reproduce e1 e2 e3 e4 e5 e6 summary app
+.PHONY: help install test lint format figures bench clean reproduce e1 e2 e3 e4 e5 e6 summary app paper
 
 help:
 	@echo "hesse developer commands:"
@@ -65,6 +65,15 @@ e6:
 
 summary:
 	python3 experiments/generate_summary.py
+
+paper:
+	@if command -v pdflatex >/dev/null 2>&1; then \
+		cd paper && pdflatex -interaction=nonstopmode main.tex && bibtex main && pdflatex -interaction=nonstopmode main.tex && pdflatex -interaction=nonstopmode main.tex; \
+	elif command -v tectonic >/dev/null 2>&1; then \
+		cd paper && tectonic main.tex; \
+	else \
+		echo "Error: Neither pdflatex nor tectonic found. Please install a TeX engine." >&2; exit 1; \
+	fi
 
 clean:
 	rm -rf build/ dist/ *.egg-info .pytest_cache .ruff_cache htmlcov .coverage
